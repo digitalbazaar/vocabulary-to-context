@@ -44,7 +44,7 @@ function _addJsonLdAliases({context}) {
  *
  * @returns {Promise<object>} The parsed vocabulary.
  */
-export async function loadModel({yamlFilePath}) {
+async function _loadModel({yamlFilePath}) {
   const yamlText = await fs.readFile(yamlFilePath, 'utf8');
   return yaml.load(yamlText);
 }
@@ -57,7 +57,7 @@ export async function loadModel({yamlFilePath}) {
  *
  * @returns {Promise<string>} The HTML template.
  */
-export async function loadHtmlTemplate({templateFilePath}) {
+async function _loadHtmlTemplate({templateFilePath}) {
   return fs.readFile(templateFilePath, 'utf8');
 }
 
@@ -70,7 +70,7 @@ export async function loadHtmlTemplate({templateFilePath}) {
  *
  * @returns {Promise<void>} Resolves when the file has been written.
  */
-export async function writeHtml({baseDir, html}) {
+async function _writeHtml({baseDir, html}) {
   // `vocabulary.html` is the default filename used by yml2vocab
   const htmlPath = path.join(baseDir, 'vocabulary.html');
   await fs.writeFile(htmlPath, html);
@@ -85,7 +85,7 @@ export async function writeHtml({baseDir, html}) {
  *
  * @returns {Promise<void>} Resolves when the file has been written.
  */
-export async function writeContext({baseDir, yamlObj}) {
+async function _writeContext({baseDir, yamlObj}) {
   const yamlUpdate = yaml.dump(yamlObj);
   const vocab = new yml2vocab.VocabGeneration(yamlUpdate);
 
@@ -134,14 +134,14 @@ export async function buildVocab({
   yamlFilePath = path.join(baseDir, 'vocabulary.yml'),
   templateFilePath = path.join(baseDir, 'template.html')
 } = {}) {
-  const yamlObj = await loadModel({yamlFilePath});
+  const yamlObj = await _loadModel({yamlFilePath});
   _sortDefinitions({yamlObj});
   const vocab = new yml2vocab.VocabGeneration(yaml.dump(yamlObj));
 
-  const template = await loadHtmlTemplate({templateFilePath});
+  const template = await _loadHtmlTemplate({templateFilePath});
   const html = _useHttpsUrls({content: vocab.getHTML(template)});
-  await writeHtml({baseDir, html});
-  await writeContext({baseDir, yamlObj});
+  await _writeHtml({baseDir, html});
+  await _writeContext({baseDir, yamlObj});
 
   // `vocabulary.jsonld` is the default filename used by yml2vocab
   await fs.writeFile(
