@@ -1,0 +1,42 @@
+{
+  "name": "vocabulary-to-context",
+  "version": "0.1.0",
+  "description": "Build yml2vocab vocabularies and JSON-LD contexts from an HTML template",
+  "type": "module",
+  "exports": "./index.js",
+  "files": [
+    "vocabBuilder.js",
+    "index.js"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalbazaar/vocabulary-to-context.git"
+  },
+  "author": {
+    "name": "Digital Bazaar, Inc.",
+    "email": "support@digitalbazaar.com",
+    "url": "https://digitalbazaar.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalbazaar/vocabulary-to-context/issues"
+  },
+  "homepage": "https://github.com/digitalbazaar/vocabulary-to-context#readme",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "yml2vocab": "^1.6.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "eslint": "^8.51.0",
+    "eslint-config-digitalbazaar": "^5.0.1",
+    "eslint-plugin-jsdoc": "^46.8.2",
+    "eslint-plugin-unicorn": "^48.0.1"
+  }
+}
