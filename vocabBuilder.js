@@ -97,10 +97,25 @@ export async function writeContext({baseDir, yamlObj}) {
   await fs.writeFile(contextPath, JSON.stringify(generatedContext));
 }
 
+/**
+ * Sorts the definitions alphabetically.
+ *
+ * @param {object} options - The options to use.
+ * @param {object} options.yamlObj - The parsed vocabulary.
+ */
 function _sortDefinitions({yamlObj}) {
   for(const definitions of [yamlObj.property, yamlObj.class]) {
-    definitions.sort((a, b) => a.id.split(':').pop().localeCompare(
-      b.id.split(':').pop()));
+    definitions.sort((firstDefinition, secondDefinition) => {
+      const firstDefId = firstDefinition.id.split(':').pop();
+      const secondDefId = secondDefinition.id.split(':').pop();
+      if(firstDefId < secondDefId) {
+        return -1;
+      }
+      if(firstDefId > secondDefId) {
+        return 1;
+      }
+      return 0;
+    });
   }
 }
 
