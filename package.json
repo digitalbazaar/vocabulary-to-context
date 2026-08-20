@@ -1,5 +1,5 @@
 {
-  "name": "vocabulary-to-context",
+  "name": "@digitalbazaar/vocabulary-to-context",
   "version": "0.1.0",
   "description": "Build yml2vocab vocabularies and JSON-LD contexts from an HTML template",
   "type": "module",
@@ -8,6 +8,9 @@
     "vocabBuilder.js",
     "index.js"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "lint": "eslint .",
     "test": "node --test"
