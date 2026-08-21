@@ -50,6 +50,36 @@ async function _loadModel({yamlFilePath}) {
 }
 
 /**
+ * Finds the first existing file from a list of file paths.
+ *
+ * @param {object} options - The options to use.
+ * @param {string[]} options.filePaths - The list of file paths to check.
+ * @param {string} options.errorMessage - The error message to throw if no file
+ * is found.
+ *
+ * @returns {Promise<string>} The first existing file path.
+ *
+ * @throws {Error} If no file is found, throws an error with the provided
+ * message.
+ */
+async function _getExistingFile({
+  filePaths,
+  errorMessage = `Missing file: ${filePaths.join(' or ')}.`
+}) {
+  for(const filePath of filePaths) {
+    try {
+      await fs.access(filePath);
+      return filePath;
+    } catch(error) {
+      if(error.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
+  throw new Error(errorMessage);
+}
+
+/**
  * Loads an HTML template without modifying it.
  *
  * @param {object} options - The options to use.
@@ -120,7 +150,7 @@ function _sortDefinitions({yamlObj}) {
 }
 
 /**
- * Builds a vocabulary using `vocabulary.yml` and an unchanged `template.html`.
+ * Builds a vocabulary using `vocabulary.yaml` and an unchanged `template.html`.
  *
  * @param {object} [options={}] - The options to use.
  * @param {string} [options.baseDir='.'] - The vocabulary project directory.
@@ -131,9 +161,22 @@ function _sortDefinitions({yamlObj}) {
  */
 export async function buildVocab({
   baseDir = '.',
-  yamlFilePath = path.join(baseDir, 'vocabulary.yml'),
+  yamlFilePath,
   templateFilePath = path.join(baseDir, 'template.html')
 } = {}) {
+  const yamlPaths = yamlFilePath ? [yamlFilePath] : [
+    path.join(baseDir, 'vocabulary.yaml'),
+    path.join(baseDir, 'vocabulary.yml')
+  ];
+  yamlFilePath = await _getExistingFile({
+    filePaths: yamlPaths,
+    errorMessage: `Missing vocabulary file: expected ${yamlPaths.join(' or ')}.`
+  });
+  templateFilePath = await _getExistingFile({
+    filePaths: [templateFilePath],
+    errorMessage: `Missing HTML template: ${templateFilePath}.`
+  });
+
   const yamlObj = await _loadModel({yamlFilePath});
   _sortDefinitions({yamlObj});
   const vocab = new yml2vocab.VocabGeneration(yaml.dump(yamlObj));
