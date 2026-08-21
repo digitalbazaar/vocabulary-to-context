@@ -1,4 +1,4 @@
 /*!
- * Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2026 Digital Bazaar, Inc.
  */
 export {buildVocab} from './vocabBuilder.js';
