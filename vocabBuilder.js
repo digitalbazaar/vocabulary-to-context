@@ -6,17 +6,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import yml2vocab from 'yml2vocab';
 
-/**
- * Replace all `http://` URLs with `https://` in the given content.
- *
- * @param {object} options - The options to use.
- * @param {string} options.content - The content to modify.
- *
- * @returns {string} The modified content with `https://` URLs.
- */
-function _useHttpsUrls({content}) {
-  return content.replaceAll('http://', 'https://');
-}
 
 /**
  * Adds JSON-LD aliases to the given context.
@@ -121,8 +110,7 @@ async function _writeContext({baseDir, yamlObj}) {
 
   // `vocabulary.context.jsonld` is the default filename used by yml2vocab
   const contextPath = path.join(baseDir, 'vocabulary.context.jsonld');
-  const generatedContext = JSON.parse(_useHttpsUrls({
-    content: vocab.getContext()}));
+  const generatedContext = JSON.parse(vocab.getContext());
   _addJsonLdAliases({context: generatedContext['@context']});
   await fs.writeFile(contextPath, JSON.stringify(generatedContext));
 }
@@ -182,16 +170,14 @@ export async function buildVocab({
   const vocab = new yml2vocab.VocabGeneration(dumpYaml(yamlObj));
 
   const template = await _loadHtmlTemplate({templateFilePath});
-  const html = _useHttpsUrls({content: vocab.getHTML(template)});
+  const html = vocab.getHTML(template);
   await _writeHtml({baseDir, html});
   await _writeContext({baseDir, yamlObj});
 
   // `vocabulary.jsonld` is the default filename used by yml2vocab
   await fs.writeFile(
-    path.join(baseDir, 'vocabulary.jsonld'),
-    _useHttpsUrls({content: vocab.getJSONLD()}));
+    path.join(baseDir,
+    'vocabulary.jsonld'), vocab.getJSONLD());
   // `vocabulary.ttl` is the default filename used by yml2vocab
-  await fs.writeFile(
-    path.join(baseDir, 'vocabulary.ttl'),
-    _useHttpsUrls({content: vocab.getTurtle()}));
+  await fs.writeFile(path.join(baseDir, 'vocabulary.ttl'), vocab.getTurtle());
 }
