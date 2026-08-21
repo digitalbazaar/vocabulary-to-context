@@ -32,8 +32,8 @@
     "node": ">=24"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0",
-    "yml2vocab": "^1.6.2"
+    "js-yaml": "^5.3.0",
+    "yml2vocab": "^1.10.4"
   },
   "devDependencies": {
     "chai": "^6.2.2",

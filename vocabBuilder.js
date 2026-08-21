@@ -1,9 +1,9 @@
 /*!
  * Copyright (c) 2026 Digital Bazaar, Inc.
  */
+import {dump as dumpYaml, load as loadYaml} from 'js-yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import yaml from 'js-yaml';
 import yml2vocab from 'yml2vocab';
 
 /**
@@ -46,7 +46,7 @@ function _addJsonLdAliases({context}) {
  */
 async function _loadModel({yamlFilePath}) {
   const yamlText = await fs.readFile(yamlFilePath, 'utf8');
-  return yaml.load(yamlText);
+  return loadYaml(yamlText);
 }
 
 /**
@@ -116,7 +116,7 @@ async function _writeHtml({baseDir, html}) {
  * @returns {Promise<void>} Resolves when the file has been written.
  */
 async function _writeContext({baseDir, yamlObj}) {
-  const yamlUpdate = yaml.dump(yamlObj);
+  const yamlUpdate = dumpYaml(yamlObj);
   const vocab = new yml2vocab.VocabGeneration(yamlUpdate);
 
   // `vocabulary.context.jsonld` is the default filename used by yml2vocab
@@ -179,7 +179,7 @@ export async function buildVocab({
 
   const yamlObj = await _loadModel({yamlFilePath});
   _sortDefinitions({yamlObj});
-  const vocab = new yml2vocab.VocabGeneration(yaml.dump(yamlObj));
+  const vocab = new yml2vocab.VocabGeneration(dumpYaml(yamlObj));
 
   const template = await _loadHtmlTemplate({templateFilePath});
   const html = _useHttpsUrls({content: vocab.getHTML(template)});
