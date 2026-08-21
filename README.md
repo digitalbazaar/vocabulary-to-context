@@ -11,5 +11,5 @@ import {buildVocab} from '@digitalbazaar/vocabulary-to-context';
 await buildVocab();
 ```
 
-The project should contain `vocabulary.yml` and `template.html`. The template is
+The project should contain `vocabulary.yaml` and `template.html`. The template is
 passed unchanged to `yml2vocab`.
