@@ -195,7 +195,9 @@ export async function buildVocab({
   await _writeContext({baseDir, jsonLdAliases, yamlObj});
 
   // `vocabulary.jsonld` is the default filename used by yml2vocab
-  await fs.writeFile(path.join(baseDir,'vocabulary.jsonld'), vocab.getJSONLD());
+  await fs.writeFile(
+    path.join(baseDir, 'vocabulary.jsonld'), vocab.getJSONLD());
   // `vocabulary.ttl` is the default filename used by yml2vocab
-  await fs.writeFile(path.join(baseDir, 'vocabulary.ttl'), vocab.getTurtle());
+  await fs.writeFile(
+    path.join(baseDir, 'vocabulary.ttl'), vocab.getTurtle());
 }
