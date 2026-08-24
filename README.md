@@ -90,3 +90,12 @@ should not collide with vocabulary terms.
 
 Run `npm test` and `npm run lint`. The project uses
 [`@digitalbazaar/eslint-config`](https://github.com/digitalbazaar/eslint-config-digitalbazaar).
+
+## Commercial Support
+
+Commercial support for this library is available upon request from
+Digital Bazaar: support@digitalbazaar.com
+
+## License
+
+[New BSD License (3-clause)](LICENSE) © 2026 Digital Bazaar
