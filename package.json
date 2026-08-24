@@ -1,6 +1,6 @@
 {
   "name": "@digitalbazaar/vocabulary-to-context",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Build yml2vocab vocabularies and JSON-LD contexts from an HTML template",
   "license": "BSD-3-Clause",
   "type": "module",
