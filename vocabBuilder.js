@@ -6,21 +6,31 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import yml2vocab from 'yml2vocab';
 
+const DEFAULT_JSON_LD_ALIASES = {id: '@id', type: '@type'};
 
 /**
  * Adds JSON-LD aliases to the given context.
  *
  * @param {object} options - The options to use.
+ * @param {object} options.aliases - The aliases to add.
  * @param {object} options.context - The context to modify.
  */
-function _addJsonLdAliases({context}) {
-  context.id = '@id';
-  context.type = '@type';
+function _addJsonLdAliases({aliases, context}) {
+  if(Array.isArray(context)) {
+    for(const value of context) {
+      if(value && typeof value === 'object') {
+        _addJsonLdAliases({aliases, context: value});
+      }
+    }
+    return;
+  }
+
+  Object.assign(context, aliases);
 
   // Recursively add aliases to nested contexts
   for(const value of Object.values(context)) {
     if(value?.['@context']) {
-      _addJsonLdAliases({context: value['@context']});
+      _addJsonLdAliases({aliases, context: value['@context']});
     }
   }
 }
@@ -100,18 +110,25 @@ async function _writeHtml({baseDir, html}) {
  *
  * @param {object} options - The options to use.
  * @param {string} options.baseDir - The output directory.
+ * @param {false|object} options.jsonLdAliases - JSON-LD aliases to add, or
+ * `false` to disable aliases.
  * @param {object} options.yamlObj - The parsed vocabulary.
  *
  * @returns {Promise<void>} Resolves when the file has been written.
  */
-async function _writeContext({baseDir, yamlObj}) {
+async function _writeContext({baseDir, jsonLdAliases, yamlObj}) {
   const yamlUpdate = dumpYaml(yamlObj);
   const vocab = new yml2vocab.VocabGeneration(yamlUpdate);
 
   // `vocabulary.context.jsonld` is the default filename used by yml2vocab
   const contextPath = path.join(baseDir, 'vocabulary.context.jsonld');
   const generatedContext = JSON.parse(vocab.getContext());
-  _addJsonLdAliases({context: generatedContext['@context']});
+  if(jsonLdAliases) {
+    _addJsonLdAliases({
+      aliases: jsonLdAliases,
+      context: generatedContext['@context']
+    });
+  }
   await fs.writeFile(contextPath, JSON.stringify(generatedContext));
 }
 
@@ -142,6 +159,8 @@ function _sortDefinitions({yamlObj}) {
  *
  * @param {object} [options={}] - The options to use.
  * @param {string} [options.baseDir='.'] - The vocabulary project directory.
+ * @param {false|object} [options.jsonLdAliases] - JSON-LD aliases to add, or
+ * `false` to disable aliases. Defaults to `id` and `type` aliases.
  * @param {string} [options.yamlFilePath] - The vocabulary YAML path.
  * @param {string} [options.templateFilePath] - The HTML template path.
  *
@@ -149,6 +168,7 @@ function _sortDefinitions({yamlObj}) {
  */
 export async function buildVocab({
   baseDir = '.',
+  jsonLdAliases = DEFAULT_JSON_LD_ALIASES,
   yamlFilePath,
   templateFilePath = path.join(baseDir, 'template.html')
 } = {}) {
@@ -172,12 +192,10 @@ export async function buildVocab({
   const template = await _loadHtmlTemplate({templateFilePath});
   const html = vocab.getHTML(template);
   await _writeHtml({baseDir, html});
-  await _writeContext({baseDir, yamlObj});
+  await _writeContext({baseDir, jsonLdAliases, yamlObj});
 
   // `vocabulary.jsonld` is the default filename used by yml2vocab
-  await fs.writeFile(
-    path.join(baseDir,
-    'vocabulary.jsonld'), vocab.getJSONLD());
+  await fs.writeFile(path.join(baseDir,'vocabulary.jsonld'), vocab.getJSONLD());
   // `vocabulary.ttl` is the default filename used by yml2vocab
   await fs.writeFile(path.join(baseDir, 'vocabulary.ttl'), vocab.getTurtle());
 }
