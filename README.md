@@ -98,4 +98,4 @@ Digital Bazaar: support@digitalbazaar.com
 
 ## License
 
-[BSD-3-Clause](LICENSE) Copyright 2026 Digital Bazaar
+[BSD-3-Clause](LICENSE) Copyright 2026 Digital Bazaar, Inc.
