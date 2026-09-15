@@ -129,7 +129,8 @@ async function _writeContext({baseDir, jsonLdAliases, yamlObj}) {
       context: generatedContext['@context']
     });
   }
-  await fs.writeFile(contextPath, JSON.stringify(generatedContext));
+  await fs.writeFile(
+    contextPath, `${JSON.stringify(generatedContext, null, 2)}\n`);
 }
 
 /**
