@@ -1,6 +1,6 @@
 # vocabulary-to-context Changelog
 
-## 1.0.1 - 2026-mm-dd
+## 1.0.1 - 2026-09-15
 
 ### Fixed
 
